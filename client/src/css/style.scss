@@ -43,6 +43,8 @@
 	--blue-gray: #7e8084;
 	--darkblue-gray: #2b2e36;
     --warm-black: #322d2d;
+    --red: #FF0000;
+    --black: #000000;
 }
 
 html, body {
@@ -191,4 +193,16 @@ html, body {
 
 .table-entry-buttons {
     color: $text-color;
+}
+
+.close-button {
+    color: $text-color;
+}
+
+.assigned-to-incompleted {
+    color: var(--red);
+}
+
+.assigned-to-completed {
+    color: var(--black);
 }

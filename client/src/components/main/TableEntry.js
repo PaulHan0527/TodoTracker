@@ -9,9 +9,11 @@ const TableEntry = (props) => {
     const description = data.description;
     const due_date = data.due_date;
     const status = data.completed ? 'complete' : 'incomplete';
+    const assigned_to = data.assigned_to;
     const [editingDate, toggleDateEdit] = useState(false);
     const [editingDescr, toggleDescrEdit] = useState(false);
     const [editingStatus, toggleStatusEdit] = useState(false);
+    const [editingAssigned, toggleAssignedEdit] = useState(false);
 
     const handleDateEdit = (e) => {
         toggleDateEdit(false);
@@ -27,6 +29,13 @@ const TableEntry = (props) => {
         props.editItem(data._id, 'description', newDescr, prevDescr);
     };
 
+    const handleAssignedEdit = (e) => {
+        toggleAssignedEdit(false);
+        const newAssigned = e.target.value ? e.target.value : 'Not Assigned';
+        const prevAssigned = assigned_to;
+        props.editItem(data._id, 'assigned_to', newAssigned, prevAssigned);
+    }
+
     const handleStatusEdit = (e) => {
         toggleStatusEdit(false);
         const newStatus = e.target.value ? e.target.value : false;
@@ -36,7 +45,7 @@ const TableEntry = (props) => {
 
     return (
         <WRow className='table-entry'>
-            <WCol size="4">
+            <WCol size="3">
                 {
                     editingDescr || description === ''
                         ? <WInput
@@ -51,7 +60,7 @@ const TableEntry = (props) => {
                 }
             </WCol>
 
-            <WCol size="3">
+            <WCol size="2">
                 {
                     editingDate ? <input
                         className='table-input' onBlur={handleDateEdit}
@@ -78,6 +87,21 @@ const TableEntry = (props) => {
                             {status}
                         </div>
                 }
+            </WCol>
+            <WCol size="2">
+                {
+                    editingAssigned || assigned_to === ''
+                    ? <WInput
+                        className='table-input' onBlur={handleAssignedEdit}
+                        autoFocus={true} defaultValue={assigned_to} type='text'
+                        wType="outlined" barAnimation="solid" inputClass="table-input-class"
+                    />
+                    : <div className={data.completed ? "table-text assigned-to-completed" : "table-text assigned-to-incompleted"}
+                        onClick={() => toggleAssignedEdit(!editingAssigned)}
+                    >{assigned_to}
+                    </div>
+                }
+                {/* This is where it is assigned to */}
             </WCol>
 
             <WCol size="3">

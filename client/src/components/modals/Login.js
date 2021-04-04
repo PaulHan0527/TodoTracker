@@ -1,6 +1,6 @@
-import React, { useState } 	from 'react';
-import { LOGIN } 			from '../../cache/mutations';
-import { useMutation }    	from '@apollo/client';
+import React, { useState } from 'react';
+import { LOGIN } from '../../cache/mutations';
+import { useMutation } from '@apollo/client';
 
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput } from 'wt-frontend';
 
@@ -35,35 +35,40 @@ const Login = (props) => {
 
 
 	return (
-        // Replace div with WModal
+		// Replace div with WModal
 
 		<div className="login-modal">
-			<div className="modal-header" onClose={() => props.setShowLogin(false)}>
-				Login
-			</div>
-
-			{
-				loading ? <div />
-					: <div className="main-login-modal">
-
-						<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text' />
-						<div className="modal-spacer">&nbsp;</div>
-						<WInput className="modal-input" onBlur={updateInput} name='password' labelAnimation="up" barAnimation="solid" labelText="Password" wType="outlined" inputType='password' />
-
-						{
-							showErr ? <div className='modal-error'>
-								{errorMsg}
-							</div>
-								: <div className='modal-error'>&nbsp;</div>
-						}
-
-					</div>
-			}
-			<div>
-				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+			<WModal className="login-modal" visible={true} cover={true} animation="slide-fade-top">
+				<WMHeader className="modal-header" onClose={() => props.setShowLogin(false)}>
 					Login
-				</WButton>
-			</div>
+				</WMHeader>
+
+				{
+					loading ? <div />
+						: <div className="main-login-modal">
+
+							<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text' />
+							<div className="modal-spacer">&nbsp;</div>
+							<WInput className="modal-input" onBlur={updateInput} name='password' labelAnimation="up" barAnimation="solid" labelText="Password" wType="outlined" inputType='password' />
+
+							{
+								showErr ? <div className='modal-error'>
+									{errorMsg}
+								</div>
+									: <div className='modal-error'>&nbsp;</div>
+							}
+
+						</div>
+				}
+				<div>
+					<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+						Login
+					</WButton>
+					{/* <WButton className="modal-button close-button" onClick={() => props.setShowLogin(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" wType="texted">
+						Cancel
+					</WButton> */}
+				</div>
+			</WModal>
 		</div>
 	);
 }
