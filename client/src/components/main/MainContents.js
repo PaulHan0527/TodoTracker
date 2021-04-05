@@ -9,11 +9,14 @@ const MainContents = (props) => {
                 disabled={!props.activeList._id} addItem={props.addItem}
                 setShowDelete={props.setShowDelete} setActiveList={props.setActiveList}
                 undo={props.undo} redo={props.redo} 
+                closeList={props.closeList}
+                tps={props.tps}
             />
             <TableContents
                 key={props.activeList.id} activeList={props.activeList}
                 deleteItem={props.deleteItem} reorderItem={props.reorderItem}
                 editItem={props.editItem}
+                
             />
         </div>
     );

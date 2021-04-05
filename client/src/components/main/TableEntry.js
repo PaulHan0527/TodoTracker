@@ -3,7 +3,10 @@ import { WButton, WInput, WRow, WCol } from 'wt-frontend';
 
 const TableEntry = (props) => {
     const { data } = props;
-
+    
+    const isTop = props.activeList.items[0].id === data.id;
+    const isBottom = props.activeList.items[props.activeList.items.length - 1].id === data.id;
+    
     const completeStyle = data.completed ? ' complete-task' : ' incomplete-task';
 
     const description = data.description;
@@ -42,6 +45,7 @@ const TableEntry = (props) => {
         const prevStatus = status;
         props.editItem(data._id, 'completed', newStatus, prevStatus);
     };
+    const clickDisabled = () => { };
 
     return (
         <WRow className='table-entry'>
@@ -106,10 +110,10 @@ const TableEntry = (props) => {
 
             <WCol size="3">
                 <div className='button-group'>
-                    <WButton className="table-entry-buttons" onClick={() => props.reorderItem(data._id, -1)} wType="texted">
+                    <WButton className={isTop ? "table-entry-buttons-disabled" : "table-entry-buttons"} onClick={isTop ? clickDisabled : () => props.reorderItem(data._id, -1)} wType="texted">
                         <i className="material-icons">expand_less</i>
                     </WButton>
-                    <WButton className="table-entry-buttons" onClick={() => props.reorderItem(data._id, 1)} wType="texted">
+                    <WButton className={isBottom ? "table-entry-buttons-disabled" : "table-entry-buttons"} onClick={isBottom ? clickDisabled : () => props.reorderItem(data._id, 1)} wType="texted">
                         <i className="material-icons">expand_more</i>
                     </WButton>
                     <WButton className="table-entry-buttons" onClick={() => props.deleteItem(data, props.index)} wType="texted">

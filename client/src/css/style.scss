@@ -65,6 +65,7 @@ html, body {
 
 .list-item-active {
     background-color: var(--deep-blue);
+    color: var(--yellow-orange);
 }
 
 .list-item {
@@ -135,6 +136,17 @@ html, body {
     color: var(--warm-black);
 }
 
+.table-header-button2 {
+    color: var(--light-gray);
+}
+
+.table-header-button-disabled2 {
+    color: var(--warm-black);
+}
+
+.sidebar-buttons-disabled {
+    color: var(--warm-black);
+}
 .table-header {
     border-bottom: 2px $text-color dotted;
 }
