@@ -24,22 +24,21 @@ export class UpdateListField_Transaction extends jsTPS_Transaction {
 }
 
 export class SortItems_Transaction extends jsTPS_Transaction {
-    constructor(listID, oldList, opcode, callback, callback2) {
+    constructor(listID, oldList, newList, callback) {
         super();
         this.listID = listID;
-        this.oldList = oldList; // this is the list
-        this.opcode = opcode;
+        this.oldList = oldList; // this is the list item array
+        this.newList = newList;
         this.sortFunction = callback;
-        this.unsortFunction = callback2;
     }
 
     async doTransaction() {
-        const { data } = await this.sortFunction({variables: {_id: this.listID, opcode:this.opcode}});
+        const { data } = await this.sortFunction({variables: {_id: this.listID, items : this.newList}});
         return data;
     }
 
     async undoTransaction() {
-        const { data } = await this.unsortFunction({variables: {_id: this.listID, todolist: this.oldList }});
+        const { data } = await this.sortFunction({variables: {_id: this.listID, items : this.oldList }});
         return data;
     }
 }

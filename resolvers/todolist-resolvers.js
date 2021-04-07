@@ -15,6 +15,7 @@ module.exports = {
 			const _id = new ObjectId(req.userId);
 			if (!_id) { return ([]) };
 			const todolists = await Todolist.find({ owner: _id });
+			//.sort( { updatedAt: -1 })
 			if (todolists) return (todolists);
 
 		},
@@ -167,109 +168,19 @@ module.exports = {
 		},
 
 		sortItems: async (_, args) => {
-			const { _id, opcode } = args;
+			const { _id, items } = args;
 			const listId = new ObjectId(_id);
-			const found = await Todolist.findOne({ _id: listId });
-			let listItems = found.items;
-			if (opcode === 1) {
-				// Description sort
-				let sorted = true;
-				for (let i = 0; i < listItems.length - 1; i++) {
-					if (listItems[i].description > listItems[i + 1].description) {
-						sorted = false;
-						break;
-					}
-				}
-				if (sorted) {
-					listItems.reverse();
-				} 
-				else listItems.sort(function compare(a, b) {
-					if (a.description < b.description) {
-						return -1;
-					}
-					if (a.description > b.description) {
-						return 1;
-					}
-					return 0
-				});
-			}
-			else if (opcode === 2) {
-				// Date Sort
-				let sorted = true;
-				for (let i = 0; i < listItems.length - 1; i++) {
-					if (listItems[i].due_date > listItems[i + 1].due_date) {
-						sorted = false;
-						break;
-					}
-				}
-				if (sorted) {
-					listItems.reverse();
-				} 
-				else listItems.sort(function compare(a, b) {
-					if (a.due_date < b.due_date) {
-						return -1;
-					}
-					if (a.due_date > b.due_date) {
-						return 1;
-					}
-					return 0
-				});
-			}
-			else if (opcode === 3) {
-				// status sort 
-				let sorted = listItems[0].completed;
-				if (sorted === false) {
-					listItems.sort(function(x, y) {
-						return (x.completed === y.completed) ? 0 : x.completed ? -1 : 1;
-					});
-				}
-				else if (sorted === true) {
-					listItems.sort(function(x, y) {
-						return (x.completed === y.completed) ? 0 : x.completed ? 1 : -1;
-					});
-				}
-				
-			}
-			else if (opcode === 4) {
-				// assigned to sort 
-				let sorted = true;
-
-				for (let i = 0; i < listItems.length - 1; i++) {
-					if (listItems[i].assigned_to > listItems[i + 1].assigned_to) {
-						sorted = false;
-						break;
-					}
-				}
-				if (sorted) {
-					listItems.reverse();
-				} 
-				else listItems.sort(function compare(a, b) {
-					if (a.assigned_to < b.assigned_to) {
-						return -1;
-					}
-					if (a.assigned_to > b.assigned_to) {
-						return 1;
-					}
-					return 0
-				});
-			}
-
+			
+			let listItems = items;
 			const updated = await Todolist.updateOne({ _id: listId }, { items: listItems })
+
+
 			if (updated) return (listItems);
 			// return old ordering if reorder was unsuccessful
 			listItems = found.items;
 			return (found.items);
-		},
-
-		unsortItems: async (_, args) => {
-			const { _id, todolist } = args;
-			const oldItems = todolist.items;
-			const listId = new ObjectId(_id);
-
-			const updated = await Todolist.updateOne({ _id: listId }, { items: oldItems })
-
-			if (updated) return _id;
-			else return ('Could not unsort list.');
 		}
+
+		
 	}
 }

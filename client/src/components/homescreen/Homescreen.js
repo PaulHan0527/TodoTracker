@@ -37,7 +37,6 @@ const Homescreen = (props) => {
 	const [AddTodolist] = useMutation(mutations.ADD_TODOLIST);
 	const [AddTodoItem] = useMutation(mutations.ADD_ITEM);
 	const [SortItem] = useMutation(mutations.SORT_ITEMS);
-	const [UnsortItem] = useMutation(mutations.UNSORT_ITEMS);
 
 
 	const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
@@ -68,6 +67,7 @@ const Homescreen = (props) => {
 	const tpsRedo = async () => {
 		const retVal = await props.tps.doTransaction();
 		refetchTodos(refetch);
+		// toggle
 		return retVal;
 	}
 
@@ -140,10 +140,109 @@ const Homescreen = (props) => {
 
 	};
 
+	
+
 	const sortItem = async (opcode) => {
 		let listID = activeList._id;
-		let list = activeList;
-		let transaction = new SortItems_Transaction(listID, list, opcode, SortItem, UnsortItem);
+		let oldList = [];
+		
+		for(let i = 0; i < activeList.items.length; i++) {
+				oldList[i] = {};
+				oldList[i]._id = activeList.items[i]._id;
+				oldList[i].id = activeList.items[i].id;
+				oldList[i].description = activeList.items[i].description;
+				oldList[i].due_date = activeList.items[i].due_date;
+				oldList[i].completed = activeList.items[i].completed;
+				oldList[i].assigned_to = activeList.items[i].assigned_to;
+		}
+		let listItems = [];
+		for(let i = 0; i < oldList.length; i ++ ) {
+			listItems[i] = oldList[i];
+		}
+		if (opcode === 1) {
+			// Description sort
+			let sorted = true;
+			for (let i = 0; i < listItems.length - 1; i++) {
+				if (listItems[i].description > listItems[i + 1].description) {
+					sorted = false;
+					break;
+				}
+			}
+			if (sorted) {
+				listItems.reverse();
+			} 
+			else listItems.sort(function compare(a, b) {
+				if (a.description < b.description) {
+					return -1;
+				}
+				if (a.description > b.description) {
+					return 1;
+				}
+				return 0
+			});
+		}
+		else if (opcode === 2) {
+			// Date Sort
+			let sorted = true;
+			for (let i = 0; i < listItems.length - 1; i++) {
+				if (listItems[i].due_date > listItems[i + 1].due_date) {
+					sorted = false;
+					break;
+				}
+			}
+			if (sorted) {
+				listItems.reverse();
+			} 
+			else listItems.sort(function compare(a, b) {
+				if (a.due_date < b.due_date) {
+					return -1;
+				}
+				if (a.due_date > b.due_date) {
+					return 1;
+				}
+				return 0
+			});
+		}
+		else if (opcode === 3) {
+			// status sort 
+			let sorted = listItems[0].completed;
+			if (sorted === false) {
+				listItems.sort(function(x, y) {
+					return (x.completed === y.completed) ? 0 : x.completed ? -1 : 1;
+				});
+			}
+			else if (sorted === true) {
+				listItems.sort(function(x, y) {
+					return (x.completed === y.completed) ? 0 : x.completed ? 1 : -1;
+				});
+			}
+			
+		}
+		else if (opcode === 4) {
+			// assigned to sort 
+			let sorted = true;
+
+			for (let i = 0; i < listItems.length - 1; i++) {
+				if (listItems[i].assigned_to > listItems[i + 1].assigned_to) {
+					sorted = false;
+					break;
+				}
+			}
+			if (sorted) {
+				listItems.reverse();
+			} 
+			else listItems.sort(function compare(a, b) {
+				if (a.assigned_to < b.assigned_to) {
+					return -1;
+				}
+				if (a.assigned_to > b.assigned_to) {
+					return 1;
+				}
+				return 0
+			});
+		}
+		
+		let transaction = new SortItems_Transaction(listID, oldList, listItems, SortItem);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	};
@@ -168,7 +267,7 @@ const Homescreen = (props) => {
 		}
 		
 	};
-
+	
 	const deleteList = async (_id) => {
 		DeleteTodolist({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_TODOS }] });
 		refetch();
@@ -186,7 +285,21 @@ const Homescreen = (props) => {
 	const handleSetActive = (id) => {
 		const todo = todolists.find(todo => todo.id === id || todo._id === id);
 		setActiveList(todo);
+
+
+		let todoLists2 = [];
+	    for(let i = 0 ; i < todolists.length; i ++) {
+			todoLists2[i] = todolists[i];
+		}
+		let index = todolists.indexOf(todo);
+		todoLists2.splice(index, 1);
+		todoLists2.splice(0, 0, todo);
+		console.log(todoLists2);
+
+
+
 		props.tps.clearAllTransactions();
+		
 	};
 
 	const closeList = async () => {
@@ -247,6 +360,7 @@ const Homescreen = (props) => {
 								handleSetActive={handleSetActive} createNewList={createNewList}
 								updateListField={updateListField}
 								activeList={activeList}
+								
 								
 							/>
 							:

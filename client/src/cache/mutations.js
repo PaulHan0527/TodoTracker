@@ -75,8 +75,8 @@ export const REORDER_ITEMS = gql`
 `;
 
 export const SORT_ITEMS = gql`
-	mutation SortItems($_id: String!, $opcode: Int!) {
-		sortItems(_id: $_id, opcode: $opcode) {
+	mutation SortItems($_id: String!, $items: [ItemInput]!) {
+		sortItems(_id: $_id, items: $items)  {
 			_id
 			id
 			description
@@ -87,11 +87,6 @@ export const SORT_ITEMS = gql`
 	}
 `;
 
-export const UNSORT_ITEMS = gql`
-	mutation unsortItems($_id: String!, $todolist: TodoInput!) {
-		unsortItems(_id: $_id, todolist: $todolist) 
-	}
-`;
 
 export const ADD_TODOLIST = gql`
 	mutation AddTodolist($todolist: TodoInput!) {
