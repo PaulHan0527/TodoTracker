@@ -23,6 +23,7 @@ const TableEntry = (props) => {
         const newDate = e.target.value ? e.target.value : 'No Date';
         const prevDate = due_date;
         props.editItem(data._id, 'due_date', newDate, prevDate);
+        
     };
 
     const handleDescrEdit = (e) => {

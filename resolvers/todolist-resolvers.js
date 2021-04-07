@@ -8,51 +8,51 @@ const Todolist = require('../models/todolist-model');
 module.exports = {
 	Query: {
 		/** 
-		 	@param 	 {object} req - the request object containing a user id
+			  @param 	 {object} req - the request object containing a user id
 			@returns {array} an array of todolist objects on success, and an empty array on failure
 		**/
 		getAllTodos: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
-			if(!_id) { return([])};
-			const todolists = await Todolist.find({owner: _id});
-			if(todolists) return (todolists);
+			if (!_id) { return ([]) };
+			const todolists = await Todolist.find({ owner: _id });
+			if (todolists) return (todolists);
 
 		},
 		/** 
-		 	@param 	 {object} args - a todolist id
+			  @param 	 {object} args - a todolist id
 			@returns {object} a todolist on success and an empty object on failure
 		**/
 		getTodoById: async (_, args) => {
 			const { _id } = args;
 			const objectId = new ObjectId(_id);
-			const todolist = await Todolist.findOne({_id: objectId});
-			if(todolist) return todolist;
+			const todolist = await Todolist.findOne({ _id: objectId });
+			if (todolist) return todolist;
 			else return ({});
 		},
 	},
 	Mutation: {
 		/** 
-		 	@param 	 {object} args - a todolist id and an empty item object
+			  @param 	 {object} args - a todolist id and an empty item object
 			@returns {string} the objectID of the item or an error message
 		**/
-		addItem: async(_, args) => {
+		addItem: async (_, args) => {
 			const { _id, item, index } = args;
 			const listId = new ObjectId(_id);
 			const objectId = new ObjectId();
-			const found = await Todolist.findOne({_id: listId});
-			if(!found) return ('Todolist not found');
-			if(item._id === '') item._id = objectId;
+			const found = await Todolist.findOne({ _id: listId });
+			if (!found) return ('Todolist not found');
+			if (item._id === '') item._id = objectId;
 			let listItems = found.items;
-			if(index < 0) listItems.push(item);
-  			else listItems.splice(index, 0, item);
-			
-			const updated = await Todolist.updateOne({_id: listId}, { items: listItems });
+			if (index < 0) listItems.push(item);
+			else listItems.splice(index, 0, item);
 
-			if(updated) return (item._id);
+			const updated = await Todolist.updateOne({ _id: listId }, { items: listItems });
+
+			if (updated) return (item._id);
 			else return ('Could not add item');
 		},
 		/** 
-		 	@param 	 {object} args - an empty todolist object
+			  @param 	 {object} args - an empty todolist object
 			@returns {string} the objectID of the todolist or an error message
 		**/
 		addTodolist: async (_, args) => {
@@ -66,46 +66,46 @@ module.exports = {
 				owner: owner,
 				items: items
 			});
-			const updated = newList.save();
-			if(updated) return objectId;
+			const updated = await newList.save();
+			if (updated) return objectId;
 			else return ('Could not add todolist');
 		},
 		/** 
-		 	@param 	 {object} args - a todolist objectID and item objectID
+			  @param 	 {object} args - a todolist objectID and item objectID
 			@returns {array} the updated item array on success or the initial 
 							 array on failure
 		**/
 		deleteItem: async (_, args) => {
-			const  { _id, itemId } = args;
+			const { _id, itemId } = args;
 			const listId = new ObjectId(_id);
-			const found = await Todolist.findOne({_id: listId});
+			const found = await Todolist.findOne({ _id: listId });
 			let listItems = found.items;
 			listItems = listItems.filter(item => item._id.toString() !== itemId);
-			const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-			if(updated) return (listItems);
+			const updated = await Todolist.updateOne({ _id: listId }, { items: listItems })
+			if (updated) return (listItems);
 			else return (found.items);
 
 		},
 		/** 
-		 	@param 	 {object} args - a todolist objectID 
+			  @param 	 {object} args - a todolist objectID 
 			@returns {boolean} true on successful delete, false on failure
 		**/
 		deleteTodolist: async (_, args) => {
 			const { _id } = args;
 			const objectId = new ObjectId(_id);
-			const deleted = await Todolist.deleteOne({_id: objectId});
-			if(deleted) return true;
+			const deleted = await Todolist.deleteOne({ _id: objectId });
+			if (deleted) return true;
 			else return false;
 		},
 		/** 
-		 	@param 	 {object} args - a todolist objectID, field, and the update value
+			  @param 	 {object} args - a todolist objectID, field, and the update value
 			@returns {boolean} true on successful update, false on failure
 		**/
 		updateTodolistField: async (_, args) => {
 			const { field, value, _id } = args;
 			const objectId = new ObjectId(_id);
-			const updated = await Todolist.updateOne({_id: objectId}, {[field]: value});
-			if(updated) return value;
+			const updated = await Todolist.updateOne({ _id: objectId }, { [field]: value });
+			if (updated) return value;
 			else return "";
 		},
 		/** 
@@ -115,23 +115,23 @@ module.exports = {
 			@returns {array} the updated item array on success, or the initial item array on failure
 		**/
 		updateItemField: async (_, args) => {
-			const { _id, itemId, field,  flag } = args;
+			const { _id, itemId, field, flag } = args;
 			let { value } = args
 			const listId = new ObjectId(_id);
-			const found = await Todolist.findOne({_id: listId});
+			const found = await Todolist.findOne({ _id: listId });
 			let listItems = found.items;
-			if(flag === 1) {
-				if(value === 'complete') { value = true; }
-				if(value === 'incomplete') { value = false; }
+			if (flag === 1) {
+				if (value === 'complete') { value = true; }
+				if (value === 'incomplete') { value = false; }
 			}
 			listItems.map(item => {
-				if(item._id.toString() === itemId) {	
-					
+				if (item._id.toString() === itemId) {
+
 					item[field] = value;
 				}
 			});
-			const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-			if(updated) return (listItems);
+			const updated = await Todolist.updateOne({ _id: listId }, { items: listItems })
+			if (updated) return (listItems);
 			else return (found.items);
 		},
 		/**
@@ -141,30 +141,135 @@ module.exports = {
 		reorderItems: async (_, args) => {
 			const { _id, itemId, direction } = args;
 			const listId = new ObjectId(_id);
-			const found = await Todolist.findOne({_id: listId});
+			const found = await Todolist.findOne({ _id: listId });
 			let listItems = found.items;
 			const index = listItems.findIndex(item => item._id.toString() === itemId);
 			// move selected item visually down the list
-			if(direction === 1 && index < listItems.length - 1) {
+			if (direction === 1 && index < listItems.length - 1) {
 				let next = listItems[index + 1];
 				let current = listItems[index]
 				listItems[index + 1] = current;
 				listItems[index] = next;
 			}
 			// move selected item visually up the list
-			else if(direction === -1 && index > 0) {
+			else if (direction === -1 && index > 0) {
 				let prev = listItems[index - 1];
 				let current = listItems[index]
 				listItems[index - 1] = current;
 				listItems[index] = prev;
 			}
-			const updated = await Todolist.updateOne({_id: listId}, { items: listItems })
-			if(updated) return (listItems);
+			const updated = await Todolist.updateOne({ _id: listId }, { items: listItems })
+			if (updated) return (listItems);
 			// return old ordering if reorder was unsuccessful
 			listItems = found.items;
 			return (found.items);
 
-		}
+		},
 
+		sortItems: async (_, args) => {
+			const { _id, opcode } = args;
+			const listId = new ObjectId(_id);
+			const found = await Todolist.findOne({ _id: listId });
+			let listItems = found.items;
+			if (opcode === 1) {
+				// Description sort
+				let sorted = true;
+				for (let i = 0; i < listItems.length - 1; i++) {
+					if (listItems[i].description > listItems[i + 1].description) {
+						sorted = false;
+						break;
+					}
+				}
+				if (sorted) {
+					listItems.reverse();
+				} 
+				else listItems.sort(function compare(a, b) {
+					if (a.description < b.description) {
+						return -1;
+					}
+					if (a.description > b.description) {
+						return 1;
+					}
+					return 0
+				});
+			}
+			else if (opcode === 2) {
+				// Date Sort
+				let sorted = true;
+				for (let i = 0; i < listItems.length - 1; i++) {
+					if (listItems[i].due_date > listItems[i + 1].due_date) {
+						sorted = false;
+						break;
+					}
+				}
+				if (sorted) {
+					listItems.reverse();
+				} 
+				else listItems.sort(function compare(a, b) {
+					if (a.due_date < b.due_date) {
+						return -1;
+					}
+					if (a.due_date > b.due_date) {
+						return 1;
+					}
+					return 0
+				});
+			}
+			else if (opcode === 3) {
+				// status sort 
+				let sorted = listItems[0].completed;
+				if (sorted === false) {
+					listItems.sort(function(x, y) {
+						return (x.completed === y.completed) ? 0 : x.completed ? -1 : 1;
+					});
+				}
+				else if (sorted === true) {
+					listItems.sort(function(x, y) {
+						return (x.completed === y.completed) ? 0 : x.completed ? 1 : -1;
+					});
+				}
+				
+			}
+			else if (opcode === 4) {
+				// assigned to sort 
+				let sorted = true;
+
+				for (let i = 0; i < listItems.length - 1; i++) {
+					if (listItems[i].assigned_to > listItems[i + 1].assigned_to) {
+						sorted = false;
+						break;
+					}
+				}
+				if (sorted) {
+					listItems.reverse();
+				} 
+				else listItems.sort(function compare(a, b) {
+					if (a.assigned_to < b.assigned_to) {
+						return -1;
+					}
+					if (a.assigned_to > b.assigned_to) {
+						return 1;
+					}
+					return 0
+				});
+			}
+
+			const updated = await Todolist.updateOne({ _id: listId }, { items: listItems })
+			if (updated) return (listItems);
+			// return old ordering if reorder was unsuccessful
+			listItems = found.items;
+			return (found.items);
+		},
+
+		unsortItems: async (_, args) => {
+			const { _id, todolist } = args;
+			const oldItems = todolist.items;
+			const listId = new ObjectId(_id);
+
+			const updated = await Todolist.updateOne({ _id: listId }, { items: oldItems })
+
+			if (updated) return _id;
+			else return ('Could not unsort list.');
+		}
 	}
 }

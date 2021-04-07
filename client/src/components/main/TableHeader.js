@@ -10,22 +10,46 @@ const TableHeader = (props) => {
     const redoDisable = tps.hasTransactionToRedo() ? 'table-header-button' : 'table-header-button-disabled';
     const clickDisabled = () => { };
 
+    const handleTaskClick = () => {
+        if (props.activeList.items.length > 0 ) {
+            props.sortItem(1);
+        }
+    }
+
+    const handleAssignedToClick = () => {
+        if (props.activeList.items.length > 0 ) {
+            props.sortItem(4);
+        }
+    }
+
+    const handleStatusClick = () => {
+        if (props.activeList.items.length > 0 ) {
+            props.sortItem(3);
+        }
+    }
+
+    const handleDateClick = () => {
+        if (props.activeList.items.length > 0 ) {
+            props.sortItem(2);
+        }
+    }
+
 
     return (
         <WRow className="table-header">
             <WCol size="3">
-                <WButton className='table-header-section' wType="texted" >Task</WButton>
+                <WButton className='table-header-section' onClick={props.disabled ? clickDisabled : handleTaskClick } wType="texted" >Task</WButton>
             </WCol>
 
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted">Due Date</WButton>
+                <WButton className='table-header-section' onClick={props.disabled ? clickDisabled : handleDateClick } wType="texted">Due Date</WButton>
             </WCol>
 
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted" >Status</WButton>
+                <WButton className='table-header-section' onClick={props.disabled ? clickDisabled : handleStatusClick } wType="texted" >Status</WButton>
             </WCol>
             <WCol size="2">
-                <WButton className='table-header-section' wType="texted" >Assigned To</WButton>
+                <WButton className='table-header-section' onClick={props.disabled ? clickDisabled : handleAssignedToClick } wType="texted" >Assigned To</WButton>
             </WCol>
 
             <WCol size="3">

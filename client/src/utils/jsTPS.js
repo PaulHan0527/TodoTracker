@@ -23,6 +23,27 @@ export class UpdateListField_Transaction extends jsTPS_Transaction {
     }
 }
 
+export class SortItems_Transaction extends jsTPS_Transaction {
+    constructor(listID, oldList, opcode, callback, callback2) {
+        super();
+        this.listID = listID;
+        this.oldList = oldList; // this is the list
+        this.opcode = opcode;
+        this.sortFunction = callback;
+        this.unsortFunction = callback2;
+    }
+
+    async doTransaction() {
+        const { data } = await this.sortFunction({variables: {_id: this.listID, opcode:this.opcode}});
+        return data;
+    }
+
+    async undoTransaction() {
+        const { data } = await this.unsortFunction({variables: {_id: this.listID, todolist: this.oldList }});
+        return data;
+    }
+}
+
 /*  Handles item reordering */
 export class ReorderItems_Transaction extends jsTPS_Transaction {
     constructor(listID, itemID, dir, callback) {
