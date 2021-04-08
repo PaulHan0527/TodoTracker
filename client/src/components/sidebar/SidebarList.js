@@ -12,6 +12,7 @@ const SidebarList = (props) => {
                         id={todo.id} key={todo.id} name={todo.name} _id={todo._id}
                         updateListField={props.updateListField}
                         
+                        
                     />
                 ))
             }

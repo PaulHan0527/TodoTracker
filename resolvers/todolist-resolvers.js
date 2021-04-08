@@ -14,8 +14,9 @@ module.exports = {
 		getAllTodos: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
 			if (!_id) { return ([]) };
-			const todolists = await Todolist.find({ owner: _id });
-			//.sort( { updatedAt: -1 })
+			const todolists = await Todolist.find({ owner: _id }).sort({isTop: 1});
+			
+			
 			if (todolists) return (todolists);
 
 		},
@@ -59,13 +60,14 @@ module.exports = {
 		addTodolist: async (_, args) => {
 			const { todolist } = args;
 			const objectId = new ObjectId();
-			const { id, name, owner, items } = todolist;
+			const { id, name, owner, items, isTop } = todolist;
 			const newList = new Todolist({
 				_id: objectId,
 				id: id,
 				name: name,
 				owner: owner,
-				items: items
+				items: items,
+				isTop: isTop,
 			});
 			const updated = await newList.save();
 			if (updated) return objectId;
@@ -179,7 +181,7 @@ module.exports = {
 			// return old ordering if reorder was unsuccessful
 			listItems = found.items;
 			return (found.items);
-		}
+		},
 
 		
 	}

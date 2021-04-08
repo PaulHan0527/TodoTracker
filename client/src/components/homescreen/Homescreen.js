@@ -19,6 +19,7 @@ import {
 	SortItems_Transaction
 } from '../../utils/jsTPS';
 import WInput from 'wt-frontend/build/components/winput/WInput';
+import { defaultPlaygroundOptions } from 'apollo-server-core';
 
 
 const Homescreen = (props) => {
@@ -28,6 +29,8 @@ const Homescreen = (props) => {
 	const [showDelete, toggleShowDelete] = useState(false);
 	const [showLogin, toggleShowLogin] = useState(false);
 	const [showCreate, toggleShowCreate] = useState(false);
+	const [hasUndo, toggleHasUndo] = useState(false);
+	const [hasRedo, toggleHasRedo] = useState(false);
 
 	const [ReorderTodoItems] = useMutation(mutations.REORDER_ITEMS);
 	const [UpdateTodoItemField] = useMutation(mutations.UPDATE_ITEM_FIELD);
@@ -61,13 +64,20 @@ const Homescreen = (props) => {
 	const tpsUndo = async () => {
 		const retVal = await props.tps.undoTransaction();
 		refetchTodos(refetch);
+		if(retVal) {
+			toggleHasRedo(props.tps.hasTransactionToRedo());
+			toggleHasUndo(props.tps.hasTransactionToUndo());
+		}
 		return retVal;
 	}
 
 	const tpsRedo = async () => {
 		const retVal = await props.tps.doTransaction();
 		refetchTodos(refetch);
-		// toggle
+		if(retVal) {
+			toggleHasRedo(props.tps.hasTransactionToRedo());
+			toggleHasUndo(props.tps.hasTransactionToUndo());
+		}
 		return retVal;
 	}
 
@@ -137,7 +147,6 @@ const Homescreen = (props) => {
 		let transaction = new ReorderItems_Transaction(listID, itemID, dir, ReorderTodoItems);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
-
 	};
 
 	
@@ -247,7 +256,14 @@ const Homescreen = (props) => {
 		tpsRedo();
 	};
 
+	
+
 	const createNewList = async () => {
+		for(let i = 0; i < todolists.length; i++) {
+			let listID = todolists[i]._id;
+			await UpdateTodolistField({variables: {_id: listID , field: 'isTop', value : "b"}});
+		}
+
 		const length = todolists.length
 		const id = length >= 1 ? todolists[length - 1].id + Math.floor((Math.random() * 100) + 1) : 1;
 		let list = {
@@ -256,9 +272,11 @@ const Homescreen = (props) => {
 			name: 'Untitled',
 			owner: props.user._id,
 			items: [],
+			isTop: "a"
 		}
 		props.tps.clearAllTransactions();
 		const { data } = await AddTodolist({ variables: { todolist: list }, refetchQueries: [{ query: GET_DB_TODOS }] });
+		
 		await refetchTodos(refetch);
 		if (data) {
 			let _id = data.addTodolist;
@@ -284,20 +302,18 @@ const Homescreen = (props) => {
 
 	const handleSetActive = (id) => {
 		const todo = todolists.find(todo => todo.id === id || todo._id === id);
-		setActiveList(todo);
-
-
-		let todoLists2 = [];
-	    for(let i = 0 ; i < todolists.length; i ++) {
-			todoLists2[i] = todolists[i];
+		for(let i = 0; i < todolists.length; i++) {
+			if (todo._id === todolists[i]._id) {
+				let listID = todolists[i]._id;
+				UpdateTodolistField({variables: {_id: listID , field: 'isTop', value : "a"}});
+			}
+			else {
+				let listID = todolists[i]._id;
+				UpdateTodolistField({variables: {_id: listID , field: 'isTop', value : "b"}});
+			}
 		}
-		let index = todolists.indexOf(todo);
-		todoLists2.splice(index, 1);
-		todoLists2.splice(0, 0, todo);
-		console.log(todoLists2);
-
-
-
+		refetch();
+		setActiveList(todo);
 		props.tps.clearAllTransactions();
 		
 	};
@@ -305,6 +321,8 @@ const Homescreen = (props) => {
 	const closeList = async () => {
 		setActiveList({});
 		props.tps.clearAllTransactions();
+		toggleHasUndo(false);
+		toggleHasRedo(false);
 	};
 
 
@@ -332,7 +350,26 @@ const Homescreen = (props) => {
 		toggleShowDelete(!showDelete)
 	}
 
+
+	var shouldHandleKeyDown = true;
+    document.onkeydown = function(event){
+    	if (!shouldHandleKeyDown) return;
+	  
+		if(event.ctrlKey && event.key === 'z') {
+			tpsUndo();
+			shouldHandleKeyDown = false;
+		}
+		else if (event.ctrlKey && event.key === 'y') {
+			tpsRedo();
+			shouldHandleKeyDown = false;
+		}
+    }
+    document.onkeyup = function(){
+      shouldHandleKeyDown = true;
+    }
+
 	return (
+		
 		<WLayout wLayout="header-lside">
 			<WLHeader>
 				<WNavbar color="colored">
@@ -362,6 +399,7 @@ const Homescreen = (props) => {
 								activeList={activeList}
 								
 								
+								
 							/>
 							:
 							<></>
@@ -381,6 +419,10 @@ const Homescreen = (props) => {
 								closeList={closeList}
 								sortItem={sortItem}
 								tps={props.tps}
+								hasUndo={hasUndo}
+								hasRedo={hasRedo}
+		
+
 							/>
 						</div>
 						:
