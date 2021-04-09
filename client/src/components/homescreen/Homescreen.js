@@ -263,7 +263,7 @@ const Homescreen = (props) => {
 			let listID = todolists[i]._id;
 			await UpdateTodolistField({variables: {_id: listID , field: 'isTop', value : "b"}});
 		}
-
+		
 		const length = todolists.length
 		const id = length >= 1 ? todolists[length - 1].id + Math.floor((Math.random() * 100) + 1) : 1;
 		let list = {
