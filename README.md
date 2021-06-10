@@ -23,9 +23,9 @@ Run `npm start` on the root directory for a dev server on `localhost:8080`.
 
 
 ### Sign In
-<img width="800" height="400" alt="Screen Shot 2021-06-01 at 3 45 03 PM" src="https://user-images.githubusercontent.com/75316771/121563809-c767db00-c9e8-11eb-85ef-795a2af0529c.PNG">
+<img width="800" alt="Screen Shot 2021-06-01 at 3 45 03 PM" src="https://user-images.githubusercontent.com/75316771/121563809-c767db00-c9e8-11eb-85ef-795a2af0529c.PNG">
 
 ### Main Page
-<img width="800" height="400" alt="Screen Shot 2021-06-01 at 3 45 03 PM" src="https://user-images.githubusercontent.com/75316771/121563543-81127c00-c9e8-11eb-87fe-94e6716bf77e.PNG">
+<img width="800" alt="Screen Shot 2021-06-01 at 3 45 03 PM" src="https://user-images.githubusercontent.com/75316771/121563543-81127c00-c9e8-11eb-87fe-94e6716bf77e.PNG">
 
 
