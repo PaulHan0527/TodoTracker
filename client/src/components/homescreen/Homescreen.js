@@ -368,6 +368,8 @@ const Homescreen = (props) => {
       shouldHandleKeyDown = true;
     }
 
+	console.log(props.user);
+
 	return (
 		
 		<WLayout wLayout="header-lside">
