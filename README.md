@@ -1,7 +1,8 @@
 # ToDoTracker
 ##### Author : Paul Han
 
-TodoTracker is a Web Application for users to create basic to-do list with name, due date, status and assigned-to fields. 
+TodoTracker is a Web Application for users to create basic to-do list with name, due date, status and assigned-to fields done for CSE316 course. 
+
 
 #### ToDoTracker Implementation 3
 
