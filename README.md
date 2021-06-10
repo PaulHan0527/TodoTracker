@@ -19,3 +19,5 @@ This app is developed as a full-stack MERN application using Mongo Atlas, Expres
 * Reorder items
 ### Sign Up Modal
 <img width="800" alt="Screen Shot 2021-06-01 at 3 45 03 PM" src="https://user-images.githubusercontent.com/75316771/121563543-81127c00-c9e8-11eb-87fe-94e6716bf77e.PNG">
+
+
